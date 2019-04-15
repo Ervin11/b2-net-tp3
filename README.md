@@ -226,3 +226,87 @@ PING 10.3.102.10 (10.3.102.10) 56(84) bytes of data.
 ```
 
 Traceroute ne fonctionne pas entre Client 1 et Server 1, je n'ai pas réussi à trouver le bug.
+
+#### IV. Lab Final
+
+[Topologie](https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png)
+
+**Client 1** : 10.10.1.1 / 255.255.255.0 / Vlan 10
+**Client 2** : 10.20.1.1 / 255.255.255.0 / Vlan 20
+**Server 1** : 10.10.1.2 / 255.255.255.0 / Vlan 10
+
+```sh
+# Configuration VLAN Switch 1
+
+IOU1#show vlan br
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Et1/0, Et1/1, Et1/2, Et1/3
+                                                Et2/0, Et2/1, Et2/2, Et2/3
+                                                Et3/0, Et3/1, Et3/2, Et3/3
+10   client1                          active    Et0/0
+20   client2                          active    Et0/1
+1002 fddi-default                     act/unsup 
+1003 token-ring-default               act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trnet-default                    act/unsup 
+
+# Test de ping de Client 1 à Client 2
+
+[ervin@client1]# ping 10.20.1.1
+PING 10.20.1.1 (10.20.1.1) 56(84) bytes of data.
+From 10.10.1.1 icmp_seq=1 Destination Host Unreachable
+From 10.10.1.1 icmp_seq=2 Destination Host Unreachable
+From 10.10.1.1 icmp_seq=3 Destination Host Unreachable
+From 10.10.1.1 icmp_seq=4 Destination Host Unreachable
+
+4 packets transmitted, 0 received, +3 errors, 100% packet loss, time 8007ms
+
+# Configuration VLAN Switch 2
+
+IOU2#show vlan br
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Et0/2, Et0/3, Et1/0, Et1/1
+                                                Et1/2, Et1/3, Et2/0, Et2/1
+                                                Et2/2, Et2/3, Et3/0, Et3/1
+                                                Et3/2, Et3/3
+10   server1                          active    Et0/0
+1002 fddi-default                     act/unsup 
+1003 token-ring-default               act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trnet-default                    act/unsup 
+
+# Test de ping Client 1 à Server 1
+
+[ervin@client1]# ping -c 2 10.10.1.2
+PING 10.10.1.2 (10.10.1.2) 56(84) bytes of data.
+64 bytes from 10.10.1.2: icmp_seq=1 ttl=64 time=22.7 ms
+64 bytes from 10.10.1.2: icmp_seq=2 ttl=64 time=4.25 ms
+
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+```
+
+**Mise en place de l'inter VLAN**
+
+```sh
+# Mise en place de 2 sous-interfaces sur Routeur 1 : VLAN 10 et VLAN 20
+
+R1#show ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            unassigned      YES unset  up                    up      
+FastEthernet0/0.1          10.10.1.254     YES manual up                    up      
+FastEthernet0/0.2          10.20.1.254     YES manual up                    up      
+FastEthernet1/0            unassigned      YES unset  administratively down down    
+FastEthernet2/0            unassigned      YES unset  administratively down down    
+FastEthernet3/0            unassigned      YES unset  administratively down down
+
+# Test de ping entre Client 1 et Client 2
+
+[ervin@client1 ~]$ ping -c 2 10.20.1.1
+PING 10.20.1.1 (10.20.1.1) 56(84) bytes of data.
+64 bytes from 10.20.1.1: icmp_seq=1 ttl=63 time=65.8 ms
+64 bytes from 10.20.1.1: icmp_seq=2 ttl=63 time=74.1 ms
+
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+```
