@@ -229,9 +229,15 @@ Traceroute ne fonctionne pas entre Client 1 et Server 1, je n'ai pas réussi à 
 
 #### IV. Lab Final
 
+**Topologie**
+
+<img src="https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png"/>
+
 **Client 1** : 10.10.1.1 / 255.255.255.0 / Vlan 10  
 **Client 2** : 10.20.1.1 / 255.255.255.0 / Vlan 20  
 **Server 1** : 10.10.1.2 / 255.255.255.0 / Vlan 10
+
+**Configuration VLAN**
 
 ```sh
 # Configuration VLAN Switch 1
@@ -386,6 +392,3 @@ The document has moved
 <A HREF="http://www.google.com/">here</A>.
 </BODY></HTML>
 ```
-**Topologie**
-
-<img src="https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png"/>
