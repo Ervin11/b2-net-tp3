@@ -229,8 +229,6 @@ Traceroute ne fonctionne pas entre Client 1 et Server 1, je n'ai pas réussi à 
 
 #### IV. Lab Final
 
-[Topologie](https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png)
-
 **Client 1** : 10.10.1.1 / 255.255.255.0 / Vlan 10  
 **Client 2** : 10.20.1.1 / 255.255.255.0 / Vlan 20  
 **Server 1** : 10.10.1.2 / 255.255.255.0 / Vlan 10
@@ -309,4 +307,82 @@ PING 10.20.1.1 (10.20.1.1) 56(84) bytes of data.
 64 bytes from 10.20.1.1: icmp_seq=2 ttl=63 time=74.1 ms
 
 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+```
+**Mise en place d' OSPF**
+
+```sh
+# Test OSPF : Traceroute de Routeur 1 à Routeur 4 en passant par Routeur 2
+
+R1#traceroute 10.100.4.2    
+Tracing the route to 10.100.4.2
+
+  1 10.100.1.2 20 msec 28 msec 16 msec
+  2 10.100.4.2 24 msec 40 msec 28 msec
+
+# Test OSPF : Traceroute de Routeur 1 à Routeur 4 en passant par Routeur 3
+
+R1#traceroute 10.100.3.2
+Tracing the route to 10.100.3.2
+
+  1 10.100.2.2 8 msec 12 msec 20 msec
+  2 10.100.3.2 36 msec 36 msec 20 msec
+
+# Test OSPF : Traceroute de Routeur 1 à la passerelle out de Routeur 4 
+
+R1#traceroute 192.168.122.15
+Tracing the route to 192.168.122.15
+
+  1 10.100.2.2 16 msec
+    10.100.1.2 16 msec
+    10.100.2.2 8 msec
+  2 10.100.4.2 40 msec
+    10.100.3.2 32 msec
+    10.100.4.2 24 msec
+```
+
+**Mise en place de NAT**
+
+```sh
+# Routeur 4
+interface FastEthernet0/0
+ ip address 10.100.4.2 255.255.255.252
+ ip nat inside
+         
+interface FastEthernet1/0
+ ip address 10.100.3.2 255.255.255.252
+ ip nat inside
+         
+interface FastEthernet2/0
+ ip address dhcp
+ ip nat outside
+ 
+# Test de fonctionnement NAT à partir de Client 1
+
+[ervin@client1]# curl google.com
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
+
+# Test de fonctionnement NAT à partir de Client 2
+
+[ervin@client2 ~]$ curl google.com
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
+
+# Test de fonctionnement NAT à partir de Server 1
+
+[ervin@server1 ~]$ curl google.com
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
 ```
