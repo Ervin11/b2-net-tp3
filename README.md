@@ -386,3 +386,6 @@ The document has moved
 <A HREF="http://www.google.com/">here</A>.
 </BODY></HTML>
 ```
+**Topologie**
+
+[Screenshot topologie](https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png)
