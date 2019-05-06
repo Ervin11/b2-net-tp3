@@ -388,4 +388,4 @@ The document has moved
 ```
 **Topologie**
 
-[Screenshot topologie](https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png)
+<img src="https://github.com/Ervin11/b2-net-tp3/blob/master/TP3-lab4.png"/>
